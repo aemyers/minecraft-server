@@ -1,0 +1,29 @@
+[Unit]
+Description=Minecraft
+Wants=network.target
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=minecraft
+Group=minecraft
+
+EnvironmentFile=/opt/minecraft/service.conf
+
+WorkingDirectory=/opt/minecraft
+ExecStart=/usr/bin/java -Xms1500m -Xmx1500m -jar server.jar nogui
+
+KillMode=none
+ExecStop=/opt/minecraft/mcrcon save-all stop
+
+Nice=5
+
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+NoNewPrivileges=true
+PrivateTmp=true
