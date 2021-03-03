@@ -17,14 +17,12 @@ apt --yes install default-jre
 
 # minecraft
 mkdir "$INSTANCE"
+cp --recursive instance/. "$INSTANCE"/
+sed -i "s/{seed}/${seed}/g" "$INSTANCE"/*
+sed -i "s/{rcon}/${rcon}/g" "$INSTANCE"/*
 curl --location "$JAR" --output "$INSTANCE"/server.jar
 curl --location "$TOOL" \
 	| tar --extract --gzip --directory="$INSTANCE" --strip=1 --wildcards '*/mcrcon'
-
-cp --recursive instance/. "$INSTANCE"/
-echo "level-seed=$seed"    >> "$INSTANCE"/server.properties
-echo "rcon.password=$rcon" >> "$INSTANCE"/server.properties
-echo "MCRCON_PASS=$rcon"   >> "$INSTANCE"/service.conf
 
 # account
 groupadd "$ACCOUNT"
