@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# config
+# environment
 INSTANCE=/opt/minecraft
 ACCOUNT=minecraft
 JAR=https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar
@@ -15,7 +15,11 @@ apt --yes update
 apt --yes upgrade
 apt --yes install default-jre
 
-# minecraft
+# account
+groupadd "$ACCOUNT"
+useradd --system --home-dir "$INSTANCE" --gid "$ACCOUNT" "$ACCOUNT"
+
+# install
 mkdir "$INSTANCE"
 cp --recursive instance/. "$INSTANCE"/
 sed -i "s/{seed}/${seed}/g" "$INSTANCE"/*
@@ -23,14 +27,10 @@ sed -i "s/{rcon}/${rcon}/g" "$INSTANCE"/*
 curl --location "$JAR" --output "$INSTANCE"/server.jar
 curl --location "$TOOL" \
 	| tar --extract --gzip --directory="$INSTANCE" --strip=1 --wildcards '*/mcrcon'
-
-# account
-groupadd "$ACCOUNT"
-useradd --system --home-dir "$INSTANCE" --gid "$ACCOUNT" "$ACCOUNT"
 chown -R "$ACCOUNT":"$ACCOUNT" "$INSTANCE"
 
 # service
-cp minecraft.service /etc/systemd/system/
+cp systemd.service /etc/systemd/system/minecraft.service
 systemctl daemon-reload
 systemctl enable minecraft.service
 systemctl start minecraft
